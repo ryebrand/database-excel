@@ -17,8 +17,10 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import pers.jun.exceldemo.pojo.User;
 import pers.jun.exceldemo.service.UserService;
@@ -27,7 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 〈一句话功能简述〉<br>
@@ -44,6 +49,27 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @RequestMapping("/runtimeException")
+    public String runtimeException() {
+        throw new RuntimeException();
+    }
+
+    @RequestMapping("/initBinder")
+    @ResponseBody
+    public Date initBinder(Date date) {
+        return date;
+    }
+
+    @RequestMapping("/globalModelAttribute")
+    @ResponseBody
+    public Object globalModelAttribute(@RequestParam("id")int id,
+                                       @ModelAttribute("name") String name){
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",id);
+        map.put("modelAttribute",name);
+        return map;
+    }
+
     @RequestMapping("/index")
     public String index(Model model){
         List<User> users = userService.selectUsers();
@@ -53,7 +79,6 @@ public class UserController {
 
         return "index";
     }
-
 
     /**
      * 导出
